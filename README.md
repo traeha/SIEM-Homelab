@@ -31,7 +31,15 @@ Me, investigating the alerts in the dashboard
 - **VirtualBox:** runs both VMs on my laptop
 - **SSH and Windows Command Prompt:** used to simulate the attacks
 - **MITRE ATT&CK:** framework Wazuh uses to tag alerts by attacker technique
+  
 ## What I Did
+| Step | Activity | Result |
+|------|----------|--------|
+| 1 | Deployed the Wazuh agent on the Ubuntu VM | Agent showed Active in the dashboard |
+| 2 | Ran repeated failed SSH logins from my laptop | Brute force alert (rule 5763, level 10) |
+| 3 | Created a new user account on the Ubuntu VM | New user alert (rule 5902, level 8) |
+| 4 | Created, modified, and deleted a file in a monitored folder (File Integrity Monitoring, FIM) | File added (rule 554, level 5), checksum changed (rule 550, level 7), file deleted (rule 553, level 7) |
+
 ## Findings
 ## Problems I Solved
 ## What I Learned
