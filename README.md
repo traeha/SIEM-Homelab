@@ -41,6 +41,16 @@ Me, investigating the alerts in the dashboard
 | 4 | Created, modified, and deleted a file in a monitored folder (File Integrity Monitoring, FIM) | File added (rule 554, level 5), checksum changed (rule 550, level 7), file deleted (rule 553, level 7) |
 
 ## Findings
+### 1. SSH Brute Force
+- **What I did:** Ran several unsuccessful SSH attempts from my attacking device to the victim machine, triggering several alerts in the SIEM
+- **What Wazuh showed:**  sshd: brute force trying to get access to the system. Authentication failed | rule.id: 5763 | Level: 10
+- **Key fields I read:** Source ip: 10.0.0.115 | Agent name: ubuntu-endpoint | MITRE tag: T1110
+- **What it means:** The alert shows repeated failed logins from one IP, which is consistent with password guessing
+![SSH alerts](screenshots/05-ssh_alerts.png)
+![Brute force alert detail](screenshots/06-Bruteforce_detail1.png)
+![Brute force alert detail](screenshots/06-Bruteforce_detail2.png)
+
+### 2. 
 ## Problems I Solved
 ## What I Learned
 ## Next Steps
