@@ -53,8 +53,8 @@ Me, investigating the alerts in the dashboard
 - **Key fields I read:** Source ip: 10.0.0.115 | Agent name: ubuntu-endpoint | MITRE tag: T1110
 - **What it means:** The alert shows repeated failed logins from one IP, which is consistent with password guessing
 ![SSH alerts](Screenshots/05-ssh_alerts.png)
-![Brute force alert detail](Screenshots/06-Bruteforce_detail1.png)
-![Brute force alert detail](Screenshots/06-Bruteforce_detail2.png)
+![Brute force alert detail](Screenshots/06-Bruteforce_detail_1.png)
+![Brute force alert detail](Screenshots/06-Bruteforce_detail_2.png)
 
 ### 3. 
 ## Problems I Solved
