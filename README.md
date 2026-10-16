@@ -62,7 +62,7 @@ Me, investigating the alerts in the dashboard
 - **Key fields I read:** Username created: `testattacker` | Agent: `ubuntu-endpoint` | Timestamp: Oct 13, 2026 @ 00:42:42
 - **What it means:** The routine sudo and session alerts are level 3, while the account changes are level 8, so severity shows which alerts to look at first. Sudo alerts are mostly normal noise, since admins use sudo constantly. An unexpected new account is more concerning, because attackers create accounts to keep access to a machine. Wazuh raised these as separate alerts, so an analyst has to connect them by username and timestamp.
 
-![Sudo and new user alerts](screenshots/07-sudo_newuser.png)
+![Sudo and new user alerts](Screenshots/07-sudo_newuser.png)
 ## Problems I Solved
 ## What I Learned
 ## Next Steps
