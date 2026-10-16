@@ -42,9 +42,9 @@ Me, investigating the alerts in the dashboard
 
 ## Findings
 ### 1. Agent Deployment
-**What I did:** Installed the Wazuh agent on the Ubuntu VM using the dashboard's Deploy new agent command
-**What Wazuh showed:** Agent Name: ubuntu-endpoint | Status: active
-**What it means:** The agent is basically the eyes and ears of the SIEM, without it being installed the SIEM has no way of watching an endpoint. Its like owning a camera without the camera being installed.
+- **What I did:** Installed the Wazuh agent on the Ubuntu VM using the dashboard's Deploy new agent command
+- **What Wazuh showed:** Agent Name: ubuntu-endpoint | Status: active
+- **What it means:** The agent is basically the eyes and ears of the SIEM, without it being installed the SIEM has no way of watching an endpoint. Its like owning a camera without the camera being installed.
 ![Agent Deployment](Screenshots/03-agent_active_dashboard_end.png)
 
 ### 2. SSH Brute Force
@@ -56,7 +56,13 @@ Me, investigating the alerts in the dashboard
 ![Brute force alert detail](Screenshots/06-Bruteforce_detail_1.png)
 ![Brute force alert detail](Screenshots/06-Bruteforce_detail_2.png)
 
-### 3. 
+### 3. Sudo and New User
+- **What I did:** I created a new user account named `testattacker` on the Ubuntu VM using `sudo adduser`.
+- **What Wazuh showed:** The single command produced a chain of alerts: a login session opened (rule 5501, level 3), a successful sudo to root (rule 5402, level 3), a new user added (rule 5902, level 8), a new group added (rule 5901, level 8), a password change (rule 5555, level 3), user information changed (rule 5904, level 8), and a login session closed (rule 5502, level 3).
+- **Key fields I read:** Username created: `testattacker` | Agent: `ubuntu-endpoint` | Timestamp: Oct 13, 2026 @ 00:42:42
+- **What it means:** The routine sudo and session alerts are level 3, while the account changes are level 8, so severity shows which alerts to look at first. Sudo alerts are mostly normal noise, since admins use sudo constantly. An unexpected new account is more concerning, because attackers create accounts to keep access to a machine. Wazuh raised these as separate alerts, so an analyst has to connect them by username and timestamp.
+
+![Sudo and new user alerts](screenshots/07-sudo_newuser.png)
 ## Problems I Solved
 ## What I Learned
 ## Next Steps
