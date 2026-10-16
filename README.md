@@ -49,7 +49,7 @@ Me, investigating the alerts in the dashboard
 
 ### 2. SSH Brute Force
 - **What I did:** Ran several unsuccessful SSH attempts from my attacking device to the victim machine, triggering several alerts in the SIEM
-- **What Wazuh showed:**  sshd: brute force trying to get access to the system. Authentication failed | rule.id: 5763 | Level: 10
+- **What Wazuh showed:**  `sshd: brute force trying to get access to the system. Authentication failed` | rule.id: 5763 | Level: 10
 - **Key fields I read:** Source ip: 10.0.0.115 | Agent name: ubuntu-endpoint | MITRE tag: T1110
 - **What it means:** The alert shows repeated failed logins from one IP, which is consistent with password guessing
 ![SSH alerts](Screenshots/05-ssh_alerts.png)
@@ -61,8 +61,21 @@ Me, investigating the alerts in the dashboard
 - **What Wazuh showed:** The single command produced a chain of alerts: a login session opened (rule 5501, level 3), a successful sudo to root (rule 5402, level 3), a new user added (rule 5902, level 8), a new group added (rule 5901, level 8), a password change (rule 5555, level 3), user information changed (rule 5904, level 8), and a login session closed (rule 5502, level 3).
 - **Key fields I read:** Username created: `testattacker` | Agent: `ubuntu-endpoint` | Timestamp: Oct 13, 2026 @ 00:42:42
 - **What it means:** The routine sudo and session alerts are level 3, while the account changes are level 8, so severity shows which alerts to look at first. Sudo alerts are mostly normal noise, since admins use sudo constantly. An unexpected new account is more concerning, because attackers create accounts to keep access to a machine. Wazuh raised these as separate alerts, so an analyst has to connect them by username and timestamp.
-
 ![Sudo and new user alerts](Screenshots/07-sudo_newuser.png)
+
+### 4. File Integrity Monitoring
+- **What I did:** Added a monitored folder to the agent configuration, then created, modified, and deleted files within the folder.
+- **What Wazuh showed:** There were three alerts, one for each event. | `File added to the system` - rule.id: 554 - rule.level: 7 | `Integrity checksum changed` - rule.id: 550 - rule.level: 7 | `File deleted` - rule.id: 553 - rule.level: 7 |
+- **Key fields I read:** file path: /home/fim_test/secret.txt | Event types: added, modified, deleted | MITRE techniques: Stored Data Manipulation (modified file), File Deletion and Data Destruction (deleted file)
+- **What it means:** Wazuh detected the change by comparing the file's checksum (unique value - like a digital fingerprint) before and after the edit. FIM is used to catch tampering with important files, like system configs, and the MITRE tags show why that matters: modifying or deleting files can be part of hiding an attack or destroying data.
+![FIM alerts](screenshots/08-fim-alerts.png)
+![FIM overview](screenshots/10-fim-overview.png)
+
+### 5. MITRE ATT&CK Overview
+- **What I did:** (opened the MITRE module for my agent over the last 7 days)
+- **What Wazuh showed:** (which techniques and tactics appeared)
+- **What it means:** (how your activity maps to the framework, and why one technique can appear under several tactics)
+
 ## Problems I Solved
 ## What I Learned
 ## Next Steps
