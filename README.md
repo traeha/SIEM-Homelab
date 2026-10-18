@@ -68,14 +68,14 @@ Me, investigating the alerts in the dashboard
 - **What Wazuh showed:** There were three alerts, one for each event. | `File added to the system` - rule.id: 554 - rule.level: 7 | `Integrity checksum changed` - rule.id: 550 - rule.level: 7 | `File deleted` - rule.id: 553 - rule.level: 7 |
 - **Key fields I read:** file path: /home/fim_test/secret.txt | Event types: added, modified, deleted | MITRE techniques: Stored Data Manipulation (modified file), File Deletion and Data Destruction (deleted file)
 - **What it means:** Wazuh detected the change by comparing the file's checksum (unique value - like a digital fingerprint) before and after the edit. FIM is used to catch tampering with important files, like system configs, and the MITRE tags show why that matters: modifying or deleting files can be part of hiding an attack or destroying data.
-![FIM alerts](screenshots/08-fim-alerts.png)
-![FIM overview](screenshots/10-fim-overview.png)
+![FIM alerts](Screenshots/08-Fim_alerts.png)
+![FIM overview](Screenshots/10-FIM_overview.png)
 
 ### 5. MITRE ATT&CK Overview
-- **What I did:** (opened the MITRE module for my agent over the last 7 days)
-- **What Wazuh showed:** (which techniques and tactics appeared)
-- **What it means:** (how your activity maps to the framework, and why one technique can appear under several tactics)
-
+- **What I did:** I opened the MITRE ATT&CK module in the Wazuh dashboard for the `ubuntu-endpoint` agent and set the time range to cover both days of the lab (Oct 12 to 13).
+- **What Wazuh showed:** The alerts matched several MITRE techniques, including Brute Force, Password Guessing, SSH, Valid Accounts, and Sudo and Sudo Caching. These fell under tactics such as Credential Access, Defense Evasion, Privilege Escalation, Persistence, Initial Access, and Lateral Movement.
+- **What it means:** MITRE ATT&CK is a catalog of known attacker tactics and techniques, and Wazuh tags alerts with it so an analyst can see what kind of behavior each alert represents. My failed logins mapped to Brute Force and Password Guessing, my successful login to Valid Accounts, and my sudo commands to Sudo and Sudo Caching. A single technique can belong to several tactics, so one login can count toward several charts, which is why some tactics look larger than what I actually did.
+![MITRE OVERVIEW](Screenshots/09-mitre-overview)
 ## Problems I Solved
 ## What I Learned
 ## Next Steps
