@@ -75,7 +75,7 @@ Me, investigating the alerts in the dashboard
 - **What I did:** I opened the MITRE ATT&CK module in the Wazuh dashboard for the `ubuntu-endpoint` agent and set the time range to cover both days of the lab (Oct 12 to 13).
 - **What Wazuh showed:** The alerts matched several MITRE techniques, including Brute Force, Password Guessing, SSH, Valid Accounts, and Sudo and Sudo Caching. These fell under tactics such as Credential Access, Defense Evasion, Privilege Escalation, Persistence, Initial Access, and Lateral Movement.
 - **What it means:** MITRE ATT&CK is a catalog of known attacker tactics and techniques, and Wazuh tags alerts with it so an analyst can see what kind of behavior each alert represents. My failed logins mapped to Brute Force and Password Guessing, my successful login to Valid Accounts, and my sudo commands to Sudo and Sudo Caching. A single technique can belong to several tactics, so one login can count toward several charts, which is why some tactics look larger than what I actually did.
-![MITRE OVERVIEW](Screenshots/09-mitre-overview)
+![MITRE OVERVIEW](Screenshots/09-mitre-overview.png)
 ## Problems I Solved
 ## What I Learned
 ## Next Steps
