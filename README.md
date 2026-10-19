@@ -76,6 +76,28 @@ Me, investigating the alerts in the dashboard
 - **What Wazuh showed:** The alerts matched several MITRE techniques, including Brute Force, Password Guessing, SSH, Valid Accounts, and Sudo and Sudo Caching. These fell under tactics such as Credential Access, Defense Evasion, Privilege Escalation, Persistence, Initial Access, and Lateral Movement.
 - **What it means:** MITRE ATT&CK is a catalog of known attacker tactics and techniques, and Wazuh tags alerts with it so an analyst can see what kind of behavior each alert represents. My failed logins mapped to Brute Force and Password Guessing, my successful login to Valid Accounts, and my sudo commands to Sudo and Sudo Caching. A single technique can belong to several tactics, so one login can count toward several charts, which is why some tactics look larger than what I actually did.
 ![MITRE OVERVIEW](Screenshots/09-mitre-overview.png)
-## Problems I Solved
-## What I Learned
-## Next Steps
+
+### Problems I Solved
+
+- **Forgot the Ubuntu password:** Rebooted into GRUB recovery mode, opened a root shell, remounted the disk as writable, and reset the password with `passwd`.
+- **Agent install timed out:** `ping 8.8.8.8` worked but `ping google.com` failed, this meant that internet connection was working but there was a problem with DNS. Changing DNS settings did not fix it in Bridged mode, so I gave the VM two adapters: NAT for internet and Bridged for lab traffic (VirtualBox NAT adapter has its own DNS).
+- **SSH server not running:** `systemctl status ssh` showed the service as inactive. I started it and set it to start on boot with `sudo systemctl enable --now ssh`.
+- **Brute force alert did not trigger at first:** The rule needs several failures from one IP in a short window, so I repeated the failed logins quickly until rule 5763 triggered.
+- **Only one FIM alert appeared:** Could only see the `File added to the system` alert, later noticed a dashboard filter I must have accidentally turned on that was set to only show rule levels 1 to 6 was hiding the modified and deleted alerts. Removing it showed all three.
+
+### What I Learned
+
+- **How a SIEM fits together:** The agent collects logs on the endpoint, the manager analyzes them against rules, and the dashboard shows the resulting alerts.
+- **How to read an alert:** I learned to check the rule ID, level, description, agent name, source IP, and MITRE tags to work out what happened and how serious it was.
+- **Detection versus investigation:** Wazuh raised each event as a separate alert. Connecting them into a story (brute force, login, new account) is the analyst's job, using timestamps, usernames, and IPs.
+- **Filters can hide alerts:** An unknown severity filter hid the modified and deleted FIM alerts, so I now check active filters before I do anything further.
+- **Severity levels show where to look first:** Routine sudo and session alerts were level 3, while account changes were level 8 and the brute force alert was level 10. This does not mean low level alerts can be ignored just because they are routine.
+- **How VirtualBox network modes differ:** NAT gave the VM working internet and DNS, while Bridged let the VMs and my laptop talk to each other. Troubleshooting that taught me to narrow down problems step by step with ping.
+
+### Possible Next Steps
+
+- Configure Wazuh active response to automatically block a brute force source IP
+- Write a custom detection rule
+- Enable vulnerability detection and review the findings for the Ubuntu VM
+- Extend the lab with a Windows endpoint and Active Directory to practice monitoring a Windows domain
+
