@@ -45,6 +45,7 @@ Me, investigating the alerts in the dashboard
 - **What I did:** Installed the Wazuh agent on the Ubuntu VM using the dashboard's Deploy new agent command
 - **What Wazuh showed:** Agent Name: ubuntu-endpoint | Status: active
 - **What it means:** The agent is basically the eyes and ears of the SIEM, without it being installed the SIEM has no way of watching an endpoint. Its like owning a camera without the camera being installed.
+
 ![Agent Deployment](Screenshots/03-agent_active_dashboard_end.png)
 
 ### 2. SSH Brute Force
@@ -52,8 +53,11 @@ Me, investigating the alerts in the dashboard
 - **What Wazuh showed:**  `sshd: brute force trying to get access to the system. Authentication failed` | rule.id: 5763 | Level: 10
 - **Key fields I read:** Source ip: 10.0.0.115 | Agent name: ubuntu-endpoint | MITRE tag: T1110
 - **What it means:** The alert shows repeated failed logins from one IP, which is consistent with password guessing
+  
 ![SSH alerts](Screenshots/05-ssh_alerts.png)
+
 ![Brute force alert detail](Screenshots/06-Bruteforce_detail_1.png)
+
 ![Brute force alert detail](Screenshots/06-Bruteforce_detail_2.png)
 
 ### 3. Sudo and New User
@@ -61,23 +65,27 @@ Me, investigating the alerts in the dashboard
 - **What Wazuh showed:** The single command produced a chain of alerts: a login session opened (rule 5501, level 3), a successful sudo to root (rule 5402, level 3), a new user added (rule 5902, level 8), a new group added (rule 5901, level 8), a password change (rule 5555, level 3), user information changed (rule 5904, level 8), and a login session closed (rule 5502, level 3).
 - **Key fields I read:** Username created: `testattacker` | Agent: `ubuntu-endpoint` | Timestamp: Oct 13, 2026 @ 00:42:42
 - **What it means:** The routine sudo and session alerts are level 3, while the account changes are level 8, so severity shows which alerts to look at first. Sudo alerts are mostly normal noise, since admins use sudo constantly. An unexpected new account is more concerning, because attackers create accounts to keep access to a machine. Wazuh raised these as separate alerts, so an analyst has to connect them by username and timestamp.
+  
 ![Sudo and new user alerts](Screenshots/07-sudo_newuser.png)
 
 ### 4. File Integrity Monitoring
 - **What I did:** Added a monitored folder to the agent configuration, then created, modified, and deleted files within the folder.
-- **What Wazuh showed:** There were three alerts, one for each event. | `File added to the system` - rule.id: 554 - rule.level: 7 | `Integrity checksum changed` - rule.id: 550 - rule.level: 7 | `File deleted` - rule.id: 553 - rule.level: 7 |
+- **What Wazuh showed:** There were three alerts, one for each event. | `File added to the system` - rule.id: 554 - rule.level: 5 | `Integrity checksum changed` - rule.id: 550 - rule.level: 7 | `File deleted` - rule.id: 553 - rule.level: 7 |
 - **Key fields I read:** file path: /home/fim_test/secret.txt | Event types: added, modified, deleted | MITRE techniques: Stored Data Manipulation (modified file), File Deletion and Data Destruction (deleted file)
 - **What it means:** Wazuh detected the change by comparing the file's checksum (unique value - like a digital fingerprint) before and after the edit. FIM is used to catch tampering with important files, like system configs, and the MITRE tags show why that matters: modifying or deleting files can be part of hiding an attack or destroying data.
+  
 ![FIM alerts](Screenshots/08-Fim_alerts.png)
+
 ![FIM overview](Screenshots/10-FIM_overview.png)
 
 ### 5. MITRE ATT&CK Overview
 - **What I did:** I opened the MITRE ATT&CK module in the Wazuh dashboard for the `ubuntu-endpoint` agent and set the time range to cover both days of the lab (Oct 12 to 13).
 - **What Wazuh showed:** The alerts matched several MITRE techniques, including Brute Force, Password Guessing, SSH, Valid Accounts, and Sudo and Sudo Caching. These fell under tactics such as Credential Access, Defense Evasion, Privilege Escalation, Persistence, Initial Access, and Lateral Movement.
 - **What it means:** MITRE ATT&CK is a catalog of known attacker tactics and techniques, and Wazuh tags alerts with it so an analyst can see what kind of behavior each alert represents. My failed logins mapped to Brute Force and Password Guessing, my successful login to Valid Accounts, and my sudo commands to Sudo and Sudo Caching. A single technique can belong to several tactics, so one login can count toward several charts, which is why some tactics look larger than what I actually did.
+
 ![MITRE OVERVIEW](Screenshots/09-mitre-overview.png)
 
-### Problems I Solved
+## Problems I Solved
 
 - **Forgot the Ubuntu password:** Rebooted into GRUB recovery mode, opened a root shell, remounted the disk as writable, and reset the password with `passwd`.
 - **Agent install timed out:** `ping 8.8.8.8` worked but `ping google.com` failed, this meant that internet connection was working but there was a problem with DNS. Changing DNS settings did not fix it in Bridged mode, so I gave the VM two adapters: NAT for internet and Bridged for lab traffic (VirtualBox NAT adapter has its own DNS).
@@ -85,7 +93,7 @@ Me, investigating the alerts in the dashboard
 - **Brute force alert did not trigger at first:** The rule needs several failures from one IP in a short window, so I repeated the failed logins quickly until rule 5763 triggered.
 - **Only one FIM alert appeared:** Could only see the `File added to the system` alert, later noticed a dashboard filter I must have accidentally turned on that was set to only show rule levels 1 to 6 was hiding the modified and deleted alerts. Removing it showed all three.
 
-### What I Learned
+## What I Learned
 
 - **How a SIEM fits together:** The agent collects logs on the endpoint, the manager analyzes them against rules, and the dashboard shows the resulting alerts.
 - **How to read an alert:** I learned to check the rule ID, level, description, agent name, source IP, and MITRE tags to work out what happened and how serious it was.
@@ -94,7 +102,7 @@ Me, investigating the alerts in the dashboard
 - **Severity levels show where to look first:** Routine sudo and session alerts were level 3, while account changes were level 8 and the brute force alert was level 10. This does not mean low level alerts can be ignored just because they are routine.
 - **How VirtualBox network modes differ:** NAT gave the VM working internet and DNS, while Bridged let the VMs and my laptop talk to each other. Troubleshooting that taught me to narrow down problems step by step with ping.
 
-### Possible Next Steps
+## Possible Next Steps
 
 - Configure Wazuh active response to automatically block a brute force source IP
 - Write a custom detection rule
